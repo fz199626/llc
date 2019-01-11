@@ -9,11 +9,13 @@ export default new Vuex.Store({
     cardNum: 0,
     nowWay: 2,
     orderAddress: [],
-    remarks: ''
+    remarks: '',
+    total: 0
   },
   mutations: {
     add(state,good){
       state.cardNum ++
+      state.total = state.total + Number(good.price)
       let data = {
         id: good.id,
         name: good.name,
@@ -37,6 +39,7 @@ export default new Vuex.Store({
     },
     jian(state,index){
       state.cardNum --
+      state.total = state.total - Number(state.cardList[index].price)
       if(state.cardList[index].num > 1){
         state.cardList[index].num --
       }else {
@@ -44,6 +47,7 @@ export default new Vuex.Store({
       }
     },
     jia(state,index){
+      state.total = state.total + Number(state.cardList[index].price)
       state.cardNum ++
       state.cardList[index].num ++
     },
@@ -55,9 +59,13 @@ export default new Vuex.Store({
     },
     remark(state,remarks){
       state.remarks = remarks
+    },
+    clear(state){
+      state.cardList = [],
+      state.cardNum = 0,
+      state.nowWay = 2,
+      state.remarks = '',
+      state.total = 0
     }
-  },
-  actions: {
-
   }
 })

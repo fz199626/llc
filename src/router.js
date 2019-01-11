@@ -24,11 +24,6 @@ const router = new Router({
       component: () => import(/* webpackChunkName: "mine" */ './components/mine/Mine.vue')
     },
     {
-      path: '/gift',
-      name: 'gift',
-      component: () => import(/* webpackChunkName: "gift" */ './components/mine/Gift.vue')
-    },
-    {
       path: '/card',
       name: 'card',
       component: () => import(/* webpackChunkName: "card" */ './components/mine/Card.vue')
@@ -67,8 +62,8 @@ const router = new Router({
 })
 router.beforeEach((to, from, next) => {
   const whiteList = ['/'] // 路由白名单
-  const login = true
   // const login = sessionStorage.getItem('login')
+  const login = true
   if (login) {
     next();
   } else {

@@ -3,7 +3,7 @@
     <div class="settlement">
       <div class="settlement-content">
         <div class="way">
-          <div><h2>国顺东路店</h2><p>9999号2楼灵灵柒</p></div>
+          <div><h2>国顺东路店</h2><p>国顺东路800号西楼2楼007店</p></div>
           <div>
             <span @click="selectWay(1)" :class="{nowWay:this.$store.state.nowWay == 1}">到店<br/>自取</span>
             <span @click="selectWay(2)" :class="{nowWay:this.$store.state.nowWay == 2}">外卖<br/>配送</span>
@@ -11,7 +11,7 @@
         </div>
         <div class="address">
           <div v-if="orderAddress != ''">
-            <h4>{{orderAddress.address}}{{orderAddress.specific}}</h4>
+            <h4>{{orderAddress.address_info}}{{orderAddress.door_plate}}</h4>
             <div>
               <p><span>收货人：{{orderAddress.name}}</span> <span>{{orderAddress.tel}}</span></p>
               <div @click="selectAddress"><img src="@/assets/logo.png"/></div>
@@ -31,14 +31,14 @@
               </div>
               <div class="num-price">
                 <span>x{{item.num}}</span>
-                <span class="unit-price">￥19</span>
+                <span class="unit-price">￥{{item.price}}</span>
               </div>
             </li>
           </ul>
-          <div class="dispatching"><span>配送费</span><span>￥5</span></div>
+          <div class="dispatching"><span>配送费</span><span>￥{{freightPrice}}</span></div>
           <div class="balance">
             <span>联系商家</span>
-            <div class="num-price"><span>x{{this.$store.state.cardNum}}</span><span class="price">￥150</span></div>
+            <div class="num-price"><span>x{{this.$store.state.cardNum}}</span><span class="price">￥{{this.$store.state.total + freightPrice}}</span></div>
           </div>
         </div>
         <div class="info"><span>优惠券</span><span class="info-right">暂未开放</span></div>
@@ -49,7 +49,7 @@
         </router-link>
       </div>
       <div class="settlement-bottom">
-        <div>￥120</div>
+        <div>￥{{this.$store.state.total + freightPrice}}</div>
         <div class="settlement-btn" @click="pay">支付</div>
       </div>
     </div>
@@ -61,20 +61,41 @@
     data() {
       return{
         cardList: this.$store.state.cardList,
-        orderAddress: this.$store.state.orderAddress
+        orderAddress: this.$store.state.orderAddress,
+        freightPrice: 0
+      }
+    },
+    computed: {
+      listenstage() {
+        return this.$store.state.nowWay;
+      }
+    },
+    watch: {
+      listenstage: function(ov,nv){
+        if(this.$store.state.nowWay == 2){
+          this.settlement()
+        }else{
+          this.freightPrice = 0
+        }
       }
     },
     methods: {
+      settlement(){
+        let freightUrl = "http://linlinchi.auteng.cn/order/freight-budget"
+        let data = {
+          nowWay: this.$store.state.nowWay,
+          orderAddress: this.$store.state.orderAddress.id,
+          cardList: this.$store.state.cardList
+        }
+        this.axios.post(freightUrl,data).then( res => {
+          this.freightPrice = res.data.data.fee
+        })
+      },
       selectWay(nowWay){
         this.$store.commit('selectWay',nowWay)
       },
       selectAddress(){
-        this.$router.push({
-          name:'address',
-          params:{
-            data: true
-          }
-        })
+        this.$router.push({name:'address', params:{data: true}})
       },
       // weixinPay(data){
       //   var vm= this;
@@ -89,8 +110,22 @@
       //     vm.onBridgeReady(data);
       //   }
       // },
-      pay(data){
-      //   var timestamp =Date.parse(new Date());
+      pay(){
+        let payUrl = "http://linlinchi.auteng.cn/order/confirm-create"
+        let data = {
+          nowWay: this.$store.state.nowWay,
+          orderAddress: this.$store.state.orderAddress.id,
+          cardList: this.$store.state.cardList,
+          cardList: this.$store.state.remarks
+        }
+        this.axios.post(payUrl,data).then( res => {
+          console.log(111111111)
+          if(res.data){
+            this.$store.commit('clear')
+            console,load(111)
+          }
+        })
+        //   var timestamp =Date.parse(new Date());
       //   var  vm = this;
       //   WeixinJSBridge.invoke(
       //     'getBrandWCPayRequest',{

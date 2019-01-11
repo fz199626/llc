@@ -5,11 +5,11 @@
       <ul v-if="cardList.length > 0">
         <li v-for="(item,index) in cardList" :key="index">
           <div class="selected-left">
-            <h5>{{item.id}}{{item.name}}</h5>
+            <h5>{{item.name}}</h5>
             <!--<div class="standard">热/大</div>-->
           </div>
           <div class="selected-right">
-            <div class="unit-price">￥19</div>
+            <div class="unit-price">￥{{item.price}}</div>
             <div class="count-num">
               <span class="reduce-num" @click="reduceNum(index)">-</span>
               <span class="good-num">{{item.num}}</span>
@@ -29,7 +29,7 @@
         <span class="selected-num">{{this.$store.state.cardNum}}</span>
       </div>
       <div class="settlement">
-        <div class="settlement-price">￥29</div>
+        <div class="settlement-price">￥{{this.$store.state.total}}</div>
         <router-link v-if="cardList.length > 0" to="/settlement" class="settlement-btn">结算</router-link>
         <div v-else class="settlement-btn">结算</div>
       </div>
@@ -91,6 +91,13 @@
         justify-content: space-between;
         align-items: center;
         .selected-left{
+          h5{
+            text-align: left;
+            width: 150px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
           .standard{
             font-size: 10px;
           }

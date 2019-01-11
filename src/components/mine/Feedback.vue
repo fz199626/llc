@@ -1,9 +1,10 @@
 <template>
   <div class="feedback">
+    <div class="msg" v-show="showMsg">{{msg}}</div>
     <div class="feedback-cont">
-      <textarea  maxlength="60" @input="descInput" v-model="desc" placeholder="请填写反馈信息"></textarea>
+      <textarea  maxlength="60" @input="descInput" v-model="content" placeholder="请填写反馈信息"></textarea>
       <p class="remnant">{{remnant}}/60</p>
-      <p class="feedback-tel"><label>手机号</label><input type="text" v-model="tel" placeholder="请填写您的手机号码"/></p>
+      <p class="feedback-tel"><label>手机号</label><input type="tel" v-model="tel" placeholder="请填写您的手机号码"/></p>
       <div class="feedback-btn" @click="feedbackBtn">提 交</div>
     </div>
     <div class="tips">
@@ -18,18 +19,33 @@
     data() {
       return{
         remnant: 60,
-        desc: "",
-        tel: ""
+        content: "",
+        tel: "",
+        msg : '',
+        showMsg : false
       }
     },
     methods: {
       descInput(){
-        var txtVal = this.desc.length;
+        var txtVal = this.content.length;
         this.remnant = 60 - txtVal;
       },
       feedbackBtn() {
-        console.log(this.desc)
-        console.log(this.tel)
+        let feedbackUrl = "http://linlinchi.auteng.cn/feedback/submit"
+        let data = {
+          content: this.content,
+          tel: this.tel
+        }
+        this.axios.post(feedbackUrl,data).then( res => {
+          if(res.data.code == 10000){
+            this.msg = res.data.msg
+            this.showMsg = !this.showMsg
+            setTimeout(() => {
+              this.showMsg = !this.showMsg
+              this.$router.push('/mine')
+            },2000);
+          }
+        })
       }
     }
   }
@@ -44,6 +60,18 @@
     bottom: 0;
     left: 0;
     color: #999;
+    .msg{
+      color: green;
+      width: 40%;
+      text-align: center;
+      background: #fff;
+      padding: 15px 0;
+      margin-left: 30%;
+      border: 1px solid #999;
+      border-radius: 10px;
+      position: absolute;
+      top: 100px;
+    }
     .feedback-cont{
       background: #fff;
       padding: 30px;
@@ -90,12 +118,12 @@
         color: #fff;
       }
     }
-  }
-  .tips{
-    font-size: 12px;
-    margin-top: 20px;
-    p{
-      margin-top: 5px;
+    .tips{
+      font-size: 12px;
+      margin-top: 20px;
+      p{
+        margin-top: 5px;
+      }
     }
   }
 </style>

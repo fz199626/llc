@@ -4,8 +4,8 @@
     <ul class="address-list">
       <li v-for="(item,index) in addressList" :key="item.id">
         <div class="address-left" @click="selectAdress(index)">
-          <div>{{item.address}}</div>
-          <div class="specific">{{item.specific}}</div>
+          <div>{{item.address_info}}</div>
+          <div class="specific">{{item.door_plate}}</div>
           <div class="address-user">
             <span>{{item.name}}({{item.sex}})</span>
             <span>{{item.tel}}</span>
@@ -23,29 +23,19 @@
   export default {
     data() {
       return{
-        addressList: [
-          {
-            id: 3,
-            address: '上海市成都北路333号',
-            specific: '招商局广场南楼1003室',
-            name: '徐志伟',
-            sex: 0,
-            tel: '15656834641',
-            isDefault: true,
-          },
-          {
-            id: 2,
-            address: '上海市成都北路333号',
-            specific: '招商局广场南楼1005室',
-            name: '顾雨晨',
-            sex: 1,
-            tel: '15656834641',
-            isDefault: false,
-          }
-        ]
+        addressList: []
       }
     },
+    mounted() {
+      this.address()
+    },
     methods: {
+      address() {
+        let addressListUrl = "http://linlinchi.auteng.cn/address/list"
+        this.axios.get(addressListUrl).then( res => {
+          this.addressList = res.data.data.items
+        })
+      },
       setDefault(id){
         console.log(id)
       },

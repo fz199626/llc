@@ -28,7 +28,7 @@
         <img src="@/assets/gift-icon.png"/>
         <span>卡卷不够用？想要获取更多礼包</span>
       </div>
-      <router-link to="/gift" class="goTo">获取</router-link>
+      <router-link to="/" class="goTo">获取</router-link>
     </div>
   </div>
 </template>

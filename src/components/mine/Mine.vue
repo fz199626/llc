@@ -9,9 +9,9 @@
         <span>普通会员</span>
       </div>
     </div>
-    <router-link to="/gift" class="mine-banner">
+    <div class="mine-banner">
       <img src="@/assets/m-banner.png"/>
-    </router-link>
+    </div>
     <div class="mine-property">
       <div class="integral">
         <h1>120</h1>

@@ -14,11 +14,11 @@
           </div>
           <ul>
             <li class="good" v-for="(good,index) in item.goods" :key="index">
-              <img class="good-icon" src="@/assets/n-order.png"/>
+              <img class="good-icon" :src="good.image"/>
               <div class="good-details">
                 <h4>{{good.name}}</h4>
                 <p class="introduce">{{good.describe}}</p>
-                <div><span class="price">￥{{good.price}}24</span><span class="other" @click="selection(good)">+</span></div>
+                <div><span class="price">￥{{good.price}}</span><span class="other" @click="selection(good)">+</span></div>
               </div>
             </li>
           </ul>
@@ -61,6 +61,12 @@
 </script>
 
 <style scoped lang="less">
+.overflowOne(){
+  width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .goodList{
   background: #fff;
   position: absolute;
@@ -140,10 +146,14 @@
         .good-details{
           flex: 1;
           font-size: 14px;
+          h4{
+            .overflowOne()
+          }
           .introduce{
             color: #999;
             font-size: 12px;
             margin: 3px 0;
+            .overflowOne()
           }
           div{
             display: flex;
