@@ -52,12 +52,7 @@ const router = new Router({
       path: '/settlement',
       name: 'settlement',
       component: () => import(/* webpackChunkName: "settlement" */ './components/order/Settlement.vue'),
-    },
-    {
-      path: '/remarks',
-      name: 'remarks',
-      component: () => import(/* webpackChunkName: "remarks" */ './components/order/Remarks.vue'),
-    },
+    }
   ]
 })
 router.beforeEach((to, from, next) => {

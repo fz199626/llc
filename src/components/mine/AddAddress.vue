@@ -11,10 +11,10 @@
     <div class="input-box"><span>电话</span><input type="text" placeholder="手机号码" v-model="addAddress.tel"/></div>
     <div class="input-box"><span>地址</span><input type="text" placeholder="收货地址" v-model="addAddress.address_info" readonly="readonly" @click="mapShow"/></div>
     <div class="input-box"><span>门牌</span><input type="text" placeholder="几楼几室" v-model="addAddress.door_plate"/></div>
-    <div class="default-btn">
-      <input id="default" type="checkbox" value="设置默认地址" v-model="addAddress.isDefault"/>
-      <label for="default">设置默认地址</label>
-    </div>
+    <!--<div class="default-btn">-->
+      <!--<input id="default" type="checkbox" value="设置默认地址" v-model="addAddress.isDefault"/>-->
+      <!--<label for="default">设置默认地址</label>-->
+    <!--</div>-->
     <div class="add-btn" @click="addBtn">确 认</div>
     <Map v-show="mapIsShow" @refres="onRefres"></Map>
   </div>
@@ -64,7 +64,7 @@
         let addAddress = "http://linlinchi.auteng.cn/address/add"
         let data = this.addAddress
         this.axios.post(addAddress, data).then( res => {
-          this.dataList = res.data.data
+          this.$router.push('/address')
         })
       },
       addClass(index){
@@ -134,7 +134,7 @@
       }
       .default-btn{
         text-align: right;
-        padding: 20px;
+        padding: 20px 20px 0;
         color: #666;
         font-size: 15px;
         input{
@@ -149,7 +149,7 @@
         color: #fff;
         background: green;
         width: 80%;
-        margin: auto;
+        margin: 20px auto 0;
         padding: 10px 0;
         border-radius: 8px;
       }

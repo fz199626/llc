@@ -25,8 +25,7 @@
     </div>
     <div class="shopping">
       <div class="gift-icon">
-        <img src="@/assets/gift-icon.png"/>
-        <span>卡卷不够用？想要获取更多礼包</span>
+        <img src="@/assets/gift-icon.png"/><span>卡卷不够用？想要获取更多礼包</span>
       </div>
       <router-link to="/" class="goTo">获取</router-link>
     </div>
@@ -48,7 +47,6 @@
     methods: {
       tabNameClick(index){
         this.tabIndex = index;
-        console.log(index)
       },
       use(e){
         console.log(e.key)

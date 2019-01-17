@@ -7,12 +7,12 @@
           <div>{{item.address_info}}</div>
           <div class="specific">{{item.door_plate}}</div>
           <div class="address-user">
-            <span>{{item.name}}({{item.sex}})</span>
+            <span class="user-name">{{item.name}}(<span v-if="item.sex == 0">先生</span><span v-else>女士</span>)</span>
             <span>{{item.tel}}</span>
           </div>
         </div>
-        <div class="edit" style=""><div @click="edit(index)"><img src="@/assets/logo.png"/></div>
-          <span style="font-size: 12px" class="default" @click="setDefault(item.id)">默认地址</span>
+        <div class="edit"><div @click="edit(index)"><img src="@/assets/editAddress.png"/></div>
+          <!--<span class="default" @click="setDefault(item.id)">默认地址</span>-->
         </div>
       </li>
     </ul>
@@ -42,9 +42,7 @@
       edit(index){
         this.$router.push({
           name:'addAddress',
-          params:{
-            data: this.addressList[index]
-          }
+          params:{data: this.addressList[index]}
         })
       },
       selectAdress(index){
@@ -97,8 +95,8 @@
           .address-user{
             font-size: 12px;
             color: #999;
-            span{
-              margin-right: 20px;
+            .user-name{
+              margin-right: 10px;
             }
           }
         }
@@ -106,12 +104,14 @@
           font-size: 0;
           text-align: center;
           img{
-            width: 30px;
-            height: 30px;
+            width: 20px;
+            height: 20px;
             margin: 5px 0;
+            opacity: 0.5;
           }
           .default{
             color: cornflowerblue;
+            font-size: 12px
           }
         }
       }

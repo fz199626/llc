@@ -9,7 +9,6 @@ export default new Vuex.Store({
     cardNum: 0,
     nowWay: 2,
     orderAddress: [],
-    remarks: '',
     total: 0
   },
   mutations: {
@@ -18,6 +17,7 @@ export default new Vuex.Store({
       state.total = state.total + Number(good.price)
       let data = {
         id: good.id,
+        image: good.image,
         name: good.name,
         price: good.price,
         num: 1,
@@ -57,14 +57,10 @@ export default new Vuex.Store({
     selectAdress(state,data){
       state.orderAddress = data
     },
-    remark(state,remarks){
-      state.remarks = remarks
-    },
     clear(state){
       state.cardList = [],
       state.cardNum = 0,
       state.nowWay = 2,
-      state.remarks = '',
       state.total = 0
     }
   }

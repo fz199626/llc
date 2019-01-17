@@ -2,10 +2,10 @@
   <div class="mine">
     <div class="mine-head">
       <div class="mine-head-icon">
-        <img src="@/assets/logo.png"/>
+        <img :src="personal.head"/>
       </div>
       <div class="mine-head-info">
-        <h2>Darion.</h2>
+        <h2>{{personal.name}}</h2>
         <span>普通会员</span>
       </div>
     </div>
@@ -14,21 +14,43 @@
     </div>
     <div class="mine-property">
       <div class="integral">
-        <h1>120</h1>
+        <h1>0</h1>
         <h4>积分</h4>
       </div>
-      <router-link to="/card" class="card">
-        <h1>4</h1>
+      <div class="card">
+        <h1>0</h1>
         <h4>优惠券</h4>
-      </router-link>
+      </div>
     </div>
     <div class="mine-list">
       <router-link to="/address"><img src="@/assets/m-addres.png"/>地址管理</router-link>
       <router-link to="/"><img src="@/assets/m-personal.png"/>个人资料</router-link>
+      <a href="tel:15656834641"><img src="@/assets/m-addres.png"/>联系商家</a>
       <router-link to="/feedback"><img src="@/assets/m-feedback.png"/>意见反馈</router-link>
     </div>
   </div>
 </template>
+
+<script>
+  export default {
+    data() {
+      return{
+        personal: []
+      }
+    },
+    mounted() {
+      this.mine()
+    },
+    methods: {
+      mine() {
+        let mineUrl = "http://linlinchi.auteng.cn/site/user-info"
+        this.axios.get(mineUrl).then( res => {
+          this.personal = res.data.data
+        })
+      }
+    }
+  }
+</script>
 
 <style scoped lang="less">
   .mine{

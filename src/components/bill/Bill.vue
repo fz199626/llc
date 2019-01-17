@@ -1,50 +1,62 @@
 <template>
   <div class="bill">
     <ul>
-      <li>
-        <div class="self-taking"><p>凭手机号前往[XX店]自取</p><span>自取</span></div>
-        <div class="odd-numbers"><p>订单 : 188888888</p><span>配送中</span></div>
+      <li v-for="item in billList" :key="item.id">
+        <div class="self-taking" v-if="item.way == 1"><p>请前往[国顺东路800号西楼2楼007店]自取</p><span>自取</span></div>
+        <div class="odd-numbers"><p>订单 : {{item.order_num}}</p><span v-if="item.way != 1">{{item.status}}</span></div>
+        <div>
+          {{item.orderDetails.goods_info}}
+        </div>
         <ul>
-          <li>
+          <li v-for="good in item.orderDetails" :key="good.id">
             <div class="li-left">
-              <img src="@/assets/n-mine.png"/>
-              <div>
-                <span class="title">奶茶</span><br />
-                <span>大/热/无糖</span>
-              </div>
+              <img :src="good.goods_info.image"/>
+              <div><p class="title">{{good.goods_info.name}}</p></div>
             </div>
             <div class="num-price">
-              <span>x1</span>
-              <span class="unit-price">￥19</span>
-            </div>
-          </li>
-          <li>
-            <div class="li-left">
-              <img src="@/assets/n-mine.png"/>
-              <div>
-                <span class="title">奶茶</span><br />
-                <span>大/热/无糖</span>
-              </div>
-            </div>
-            <div class="num-price">
-              <span>x1</span>
-              <span class="unit-price">￥19</span>
+              <span>x{{good.num}}</span>
+              <span class="unit-price">￥{{good.goods_info.price}}</span>
             </div>
           </li>
         </ul>
-        <div class="dispatching"><span>配送费</span><span>￥5</span></div>
-        <div class="red-packet"><span>红包</span><span>-￥15</span></div>
+        <div class="dispatching"><span>配送费</span><span>￥{{item.distribution_fee}}</span></div>
+        <div class="red-packet"><span>优惠折扣</span><span>-￥0</span></div>
+        <div class="address">
+          <p>{{item.address}}</p>
+          <p class="address-name"><span>{{item.contacts}}</span>{{item.tel}}</p>
+        </div>
         <div class="balance">
-          <span>2018/12/11</span>
+          <span>{{item.create_time}}</span>
           <div class="num-price">
-            <span>x3</span>
-            <span class="price">￥150</span>
+            <span>x{{item.num}}</span>
+            <span class="price">￥{{item.total_price}}</span>
           </div>
         </div>
       </li>
     </ul>
   </div>
 </template>
+
+<script>
+  export default {
+    data() {
+      return{
+        billList: []
+      }
+    },
+    mounted() {
+      this.bill()
+    },
+    methods: {
+      bill() {
+        let billListUrl = "http://linlinchi.auteng.cn/order/my-order"
+        this.axios.get(billListUrl).then( res => {
+          this.billList = res.data.data.items
+        })
+      }
+    }
+  }
+</script>
 
 <style scoped lang="less">
   .bill{
@@ -76,12 +88,16 @@
         .self-taking{
           background: #efefef;
           padding: 5px 15px;
+          font-size: 10px;
+          p{
+            width: 80%;
+            text-align: left;
+          }
           span{
             background: red;
             color: #fff;
             padding: 2px 10px;
             border-radius: 8px;
-            font-size: 10px;
           }
         }
         .odd-numbers{
@@ -95,12 +111,25 @@
             font-size: 10px;
           }
         }
-
         .dispatching{
           font-size: 14px;
         }
         .red-packet{
           color: red;
+        }
+        .address{
+          text-align: left;
+          flex-wrap: wrap;
+          color: #666;
+          font-size: 13px;
+          .address-name{
+            color: #999;
+            width: 100%;
+            font-size: 12px;
+            span{
+              margin-right: 10px;
+            }
+          }
         }
         .balance{
           color: #999;
@@ -132,13 +161,18 @@
             .li-left{
               display: flex;
               text-align: left;
+              align-items: center;
               img{
-                width: 35px;
-                height: 35px;
+                width: 40px;
+                height: 30px;
                 margin-right: 5px;
               }
               .title{
                 font-size: 14px;
+                width: 150px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
               }
             }
             .num-price{

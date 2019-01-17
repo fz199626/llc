@@ -1,59 +1,61 @@
 <template>
-  <keep-alive>
-    <div class="settlement">
-      <div class="settlement-content">
-        <div class="way">
-          <div><h2>国顺东路店</h2><p>国顺东路800号西楼2楼007店</p></div>
-          <div>
-            <span @click="selectWay(1)" :class="{nowWay:this.$store.state.nowWay == 1}">到店<br/>自取</span>
-            <span @click="selectWay(2)" :class="{nowWay:this.$store.state.nowWay == 2}">外卖<br/>配送</span>
-          </div>
+  <div class="settlement">
+    <div class="settlement-content">
+      <div class="way">
+        <div><h2>国顺东路店</h2><p>国顺东路800号西楼2楼007店</p></div>
+        <div>
+          <span @click="selectWay(1)" :class="{nowWay:this.$store.state.nowWay == 1}">到店<br/>自取</span>
+          <span @click="selectWay(2)" :class="{nowWay:this.$store.state.nowWay == 2}">外卖<br/>配送</span>
         </div>
-        <div class="address">
-          <div v-if="orderAddress != ''">
-            <h4>{{orderAddress.address_info}}{{orderAddress.door_plate}}</h4>
-            <div>
-              <p><span>收货人：{{orderAddress.name}}</span> <span>{{orderAddress.tel}}</span></p>
-              <div @click="selectAddress"><img src="@/assets/logo.png"/></div>
-            </div>
-          </div>
-          <div class="selectAddress" v-else @click="selectAddress">添加地址</div>
-        </div>
-        <div class="bill">
-          <ul>
-            <li v-for="item in cardList" :key="item.id">
-              <div class="li-left">
-                <img src="@/assets/n-mine.png"/>
-                <div>
-                  <span class="title">{{item.name}}</span><br />
-                  <!--<span>大/热/无糖</span>-->
-                </div>
-              </div>
-              <div class="num-price">
-                <span>x{{item.num}}</span>
-                <span class="unit-price">￥{{item.price}}</span>
-              </div>
-            </li>
-          </ul>
-          <div class="dispatching"><span>配送费</span><span>￥{{freightPrice}}</span></div>
-          <div class="balance">
-            <span>联系商家</span>
-            <div class="num-price"><span>x{{this.$store.state.cardNum}}</span><span class="price">￥{{this.$store.state.total + freightPrice}}</span></div>
-          </div>
-        </div>
-        <div class="info"><span>优惠券</span><span class="info-right">暂未开放</span></div>
-        <router-link to="/remarks" class="info">
-          <span>备注信息</span>
-          <span class="info-right" v-if="this.$store.state.remarks == ''">需要打包/加料等</span>
-          <span class="info-right" v-else>{{this.$store.state.remarks}}</span>
-        </router-link>
       </div>
-      <div class="settlement-bottom">
-        <div>￥{{this.$store.state.total + freightPrice}}</div>
-        <div class="settlement-btn" @click="pay">支付</div>
+      <div class="address" v-if="this.$store.state.nowWay == 2">
+        <div v-if="orderAddress != ''">
+          <h4>{{orderAddress.address_info}}{{orderAddress.door_plate}}</h4>
+          <div>
+            <p><span>收货人：{{orderAddress.name}}</span><span>{{orderAddress.tel}}</span></p>
+            <div @click="selectAddress"><img src="@/assets/editAddress.png"/></div>
+          </div>
+        </div>
+        <div class="selectAddress" v-else @click="selectAddress">添加地址</div>
+      </div>
+      <div class="bill">
+        <ul>
+          <li v-for="item in cardList" :key="item.id">
+            <div class="li-left">
+              <img :src="item.image"/>
+              <div><p class="title">{{item.name}}</p></div>
+            </div>
+            <div class="num-price">
+              <span>x{{item.num}}</span>
+              <span class="unit-price">￥{{item.price}}</span>
+            </div>
+          </li>
+        </ul>
+        <div class="dispatching"><span>配送费</span><span>￥{{orderInfo.fee}}</span></div>
+        <div class="balance">
+          <a href="tel:15656834641">联系商家</a>
+          <div class="num-price"><span>x{{orderInfo.num}}</span><span class="price">￥{{orderInfo.total_price}}</span></div>
+        </div>
+      </div>
+      <div class="info"><span>优惠券</span><span class="info-right">暂未开放</span></div>
+      <div class="info" @click="openRemarks">
+        <span>备注信息</span>
+        <span class="info-right" v-if="remarks == ''">需要打包/加料等</span>
+        <span class="info-right" v-else>{{remarks}}</span>
       </div>
     </div>
-  </keep-alive>
+    <div v-show="isShowRemarks" class="remarks">
+      <div class="remarks-cont">
+        <textarea  maxlength="60" @input="remarkInput" v-model="remarks" placeholder="请填写备注信息"></textarea>
+        <p class="remnant">{{remnant}}/60</p>
+        <div @click="closeRemarks" class="remarks-btn">确 定</div>
+      </div>
+    </div>
+    <div class="settlement-bottom">
+      <div>￥{{orderInfo.total_price}}</div>
+      <div class="settlement-btn" @click="pay">支付</div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -62,22 +64,27 @@
       return{
         cardList: this.$store.state.cardList,
         orderAddress: this.$store.state.orderAddress,
-        freightPrice: 0
+        orderInfo: [],
+        isShowRemarks: false,
+        remnant: 60,
+        remarks: ''
       }
     },
     computed: {
-      listenstage() {
+      listenstage(){
         return this.$store.state.nowWay;
       }
     },
     watch: {
-      listenstage: function(ov,nv){
-        if(this.$store.state.nowWay == 2){
-          this.settlement()
-        }else{
-          this.freightPrice = 0
-        }
+      listenstage(){
+        this.settlement()
       }
+    },
+    mounted(){
+      this.settlement()
+      window.addEventListener("1", function(e) {
+        this.$router.push('/')
+      }, false);
     },
     methods: {
       settlement(){
@@ -88,7 +95,7 @@
           cardList: this.$store.state.cardList
         }
         this.axios.post(freightUrl,data).then( res => {
-          this.freightPrice = res.data.data.fee
+          this.orderInfo = res.data.data
         })
       },
       selectWay(nowWay){
@@ -97,57 +104,57 @@
       selectAddress(){
         this.$router.push({name:'address', params:{data: true}})
       },
-      // weixinPay(data){
-      //   var vm= this;
-      //   if (typeof WeixinJSBridge == "undefined"){//微信浏览器内置对象。参考微信官方文档
-      //     if( document.addEventListener ){
-      //       document.addEventListener('WeixinJSBridgeReady', vm.onBridgeReady(data), false);
-      //     }else if (document.attachEvent){
-      //       document.attachEvent('WeixinJSBridgeReady', vm.onBridgeReady(data));
-      //       document.attachEvent('onWeixinJSBridgeReady',vm.onBridgeReady(data));
-      //     }
-      //   }else{
-      //     vm.onBridgeReady(data);
-      //   }
-      // },
+      openRemarks(){
+        this.isShowRemarks = !this.isShowRemarks
+      },
+      closeRemarks(){
+        this.isShowRemarks = !this.isShowRemarks
+      },
+      remarkInput(){
+        var txtVal = this.remarks.length;
+        this.remnant = 60 - txtVal;
+      },
       pay(){
-        let payUrl = "http://linlinchi.auteng.cn/order/confirm-create"
+        let payUrl = "http://linlinchi.auteng.cn/pay/wechat-pay"
         let data = {
           nowWay: this.$store.state.nowWay,
           orderAddress: this.$store.state.orderAddress.id,
           cardList: this.$store.state.cardList,
-          cardList: this.$store.state.remarks
+          remarks: this.remarks,
+          orderInfo: this.orderInfo
         }
         this.axios.post(payUrl,data).then( res => {
-          console.log(111111111)
-          if(res.data){
-            this.$store.commit('clear')
-            console,load(111)
+          if(res.data.success){
+            this.weixinPay(res.data.data)
           }
         })
-        //   var timestamp =Date.parse(new Date());
-      //   var  vm = this;
-      //   WeixinJSBridge.invoke(
-      //     'getBrandWCPayRequest',{
-      //       debug: true,
-      //       "appId": 'wx8546e89310ae4f33', //公众号名称，由商户传入
-      //       "timeStamp": timestamp, //时间戳，自1970年以来的秒数
-      //       "nonceStr": "57e65ce69d05965ef9fb3c334659e3df",  //随机串
-      //       "package": "prepay_id=1499702672",
-      //       "signType": "MD5",   //微信签名方式
-      //       "paySign": "fCidgPVjtBglpzqAAmF4ETsKflwXpO2rvKttbFKyx2O",     //微信签名
-      //     },
-      //     function(res){
-      //      alert(JSON.stringify(res))
-      //       if(res.err_msg == "get_brand_wcpay_request:ok" ){
-      //         alert("支付成功！");
-      //       }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
-      //         alert('支付取消');
-      //       }else if(res.err_msg == "get_brand_wcpay_request:fail"){
-      //         alert('支付失败');
-      //       }
-      //     }
-      //   );
+      },
+      weixinPay(data){
+        var vm = this;
+        if(typeof WeixinJSBridge == "undefined"){
+          if(document.addEventListener){
+            document.addEventListener('WeixinJSBridgeReady', vm.onBridgeReady(data), false);
+          }else if (document.attachEvent){
+            document.attachEvent('WeixinJSBridgeReady', vm.onBridgeReady(data));
+            document.attachEvent('onWeixinJSBridgeReady',vm.onBridgeReady(data));
+          }
+        }else{
+          vm.onBridgeReady(data);
+        }
+      },
+      onBridgeReady(data){
+        var vm = this;
+        WeixinJSBridge.invoke('getBrandWCPayRequest', data, function(res){
+          vm.$router.push('/');
+          vm.$store.commit('clear')
+          if(res.err_msg == "get_brand_wcpay_request:ok" ){
+            console.log("支付成功！")
+          }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+            alert("取消支付！")
+          }else if(res.err_msg == "get_brand_wcpay_request:fail"){
+            alert("支付失败！")
+          }
+        })
       }
     }
   }
@@ -247,11 +254,13 @@
           font-size: 14px;
         }
         .balance{
-          color: blue;
           font-size: 13px;
           border-top: 1px solid #dfdfdf;
           padding: 10px 0;
           margin: 15px 15px 0;
+          a{
+          color: blue;
+          }
           .num-price{
             width: 100px;
             display: flex;
@@ -279,13 +288,17 @@
               align-items: center;
               text-align: left;
               img{
-                width: 35px;
-                height: 35px;
+                width: 40px;
+                height: 30px;
                 margin-right: 8px;
               }
               .title{
                 font-size: 14px;
                 color: #666;
+                width: 150px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
               }
             }
             .num-price{
@@ -317,6 +330,46 @@
           overflow:hidden;
           text-overflow:ellipsis;
           white-space:nowrap
+        }
+      }
+    }
+    .remarks{
+      z-index: 99;
+      background: #eee;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      color: #999;
+      .remarks-cont{
+        background: #fff;
+        padding: 30px;
+        textarea{
+          width: 94%;
+          height: 160px;
+          border: 1px solid #ddd;
+          border-radius: 5px;
+          padding: 3%;
+          outline: none;
+          font-size: 14px;
+          color: #666;
+          line-height: 24px;
+        }
+        .remnant{
+          text-align: right;
+          padding-right: 10px;
+          margin-top: -30px;
+        }
+        .remarks-btn{
+          display: inline-block;
+          width: 150px;
+          height: 35px;
+          line-height: 35px;
+          border-radius: 20px;
+          margin: 30px auto 0;
+          background: green;
+          color: #fff;
         }
       }
     }

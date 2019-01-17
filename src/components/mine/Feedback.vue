@@ -5,7 +5,7 @@
       <textarea  maxlength="60" @input="descInput" v-model="content" placeholder="请填写反馈信息"></textarea>
       <p class="remnant">{{remnant}}/60</p>
       <p class="feedback-tel"><label>手机号</label><input type="tel" v-model="tel" placeholder="请填写您的手机号码"/></p>
-      <div class="feedback-btn" @click="feedbackBtn">提 交</div>
+      <div class="feedback-btn" @click="feedbackBtn(showMsg)">提 交</div>
     </div>
     <div class="tips">
       <p>感谢您的建议和反馈，我们将认真阅读您的每一条信息</p>
@@ -30,22 +30,24 @@
         var txtVal = this.content.length;
         this.remnant = 60 - txtVal;
       },
-      feedbackBtn() {
-        let feedbackUrl = "http://linlinchi.auteng.cn/feedback/submit"
-        let data = {
-          content: this.content,
-          tel: this.tel
-        }
-        this.axios.post(feedbackUrl,data).then( res => {
-          if(res.data.code == 10000){
-            this.msg = res.data.msg
-            this.showMsg = !this.showMsg
-            setTimeout(() => {
-              this.showMsg = !this.showMsg
-              this.$router.push('/mine')
-            },2000);
+      feedbackBtn(showMsg) {
+        if(showMsg == false){
+          let feedbackUrl = "http://linlinchi.auteng.cn/feedback/submit"
+          let data = {
+            content: this.content,
+            tel: this.tel
           }
-        })
+          this.axios.post(feedbackUrl,data).then( res => {
+            if(res.data.code == 10000){
+              this.msg = res.data.msg
+              this.showMsg = !this.showMsg
+              setTimeout(() => {
+                this.showMsg = !this.showMsg
+                this.$router.push('/mine')
+              },2000);
+            }
+          })
+        }
       }
     }
   }
