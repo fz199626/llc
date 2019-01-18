@@ -13,17 +13,34 @@
             <div class="good-header-name">{{item.name}}</div><div class="good-header-br"></div>
           </div>
           <ul>
-            <li class="good" v-for="(good,index) in item.goods" :key="index">
+            <li class="good" v-for="(good,index) in item.goods" :key="index" @click="details(good)">
               <img class="good-icon" :src="good.image"/>
               <div class="good-details">
                 <h4>{{good.name}}</h4>
                 <p class="introduce">{{good.describe}}</p>
-                <div><span class="price">￥{{good.price}}</span><span class="other" @click="selection(good)">+</span></div>
+                <div>
+                  <span class="price">￥{{good.price}}</span>
+                  <div @click.stop>
+                    <div v-for="cardLists in cardList" v-if="good.id == cardLists.id" :key="cardLists.id">
+                      <span class="reduce-num" @click="reduceNum(good)">-</span>
+                      <span class="good-num">{{cardLists.num}}</span>
+                    </div>
+                    <span class="add-num" @click="selection(good)">+</span>
+                  </div>
+                </div>
               </div>
             </li>
           </ul>
         </li>
       </ul>
+    </div>
+    <div class="details-shade" v-show="isShowDetails" @click="closeDetails"></div>
+    <div class="details" v-show="isShowDetails">
+      <img :src="goodDetails.image"/>
+      <div>
+        <p>{{goodDetails.name}}</p>
+        <p class="describe">{{goodDetails.describe}}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -34,6 +51,9 @@
       return {
         dataList: [],
         tabIndex: '',
+        cardList: this.$store.state.cardList,
+        isShowDetails: false,
+        goodDetails: []
       }
     },
     mounted() {
@@ -49,9 +69,18 @@
       tabNameClick(index){
         this.tabIndex = index
       },
+      details(good){
+        this.goodDetails = good
+        this.isShowDetails = !this.isShowDetails
+      },
+      closeDetails(){
+        this.isShowDetails = !this.isShowDetails
+      },
+      reduceNum(good){
+        this.$store.commit('reduce',good)
+      },
       selection(good){
         this.$store.commit('add',good)
-        this.selectionIsShow = !this.selectionIsShow
       },
       addClass(index){
         this.current = index
@@ -158,25 +187,73 @@
           div{
             display: flex;
             justify-content: space-between;
+            align-items: center;
             .price{
               color: red;
               font-size: 15px;
             }
-            .other{
+            .reduce-num,.add-num{
               display: inline-block;
-              height: 16px;
-              width: 16px;
-              border-radius: 16px;
+              height: 14px;
+              width: 14px;
+              border-radius: 14px;
               text-align: center;
-              line-height: 16px;
+              line-height: 12px;
               color: #fff;
               margin-top: 2px;
-              background: red;
+              background: #ccc;
               font-size: 14px;
+            }
+            .good-num{
+              margin: 0 10px;
+              font-size: 14px;
+            }
+            .add-num{
+              background: red;
+              line-height: 15px;
             }
           }
         }
       }
+    }
+  }
+  .details-shade{
+    z-index: 9;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0,0,0,.5);
+  }
+  .details{
+    z-index: 10;
+    background: #fff;
+    position: absolute;
+    width: 200px;
+    height: 250px;
+    top: 50%;
+    left: 50%;
+    margin-top: -125px;
+    margin-left: -100px;
+    border-radius: 10px;
+    padding: 20px;
+    font-size: 15px;
+    img{
+      width: 200px;
+      height: 150px;
+      margin-bottom: 10px;
+    }
+    .describe{
+      font-size: 12px;
+      color: #666;
+      text-align: left;
+      margin-top: 5px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
     }
   }
 }
