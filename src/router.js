@@ -1,17 +1,16 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Order from './components/order/Order.vue'
 
 Vue.use(Router)
 
-const router = new Router({
+export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
     {
       path: '/',
       name: 'order',
-      component: Order,
+      component: () => import(/* webpackChunkName: "order" */ './components/order/Order.vue')
     },
     {
       path: '/bill',
@@ -52,21 +51,11 @@ const router = new Router({
       path: '/settlement',
       name: 'settlement',
       component: () => import(/* webpackChunkName: "settlement" */ './components/order/Settlement.vue'),
+    },
+    {
+      path: '/closeShop',
+      name: 'closeShop',
+      component: () => import(/* webpackChunkName: "closeShop" */ './components/mine/CloseShop.vue'),
     }
   ]
 })
-router.beforeEach((to, from, next) => {
-  const whiteList = ['/'] // 路由白名单
-  // const login = sessionStorage.getItem('login')
-  const login = true
-  if (login) {
-    next();
-  } else {
-    if (whiteList.indexOf(to.path) !== -1) { // 在免登录白名单，直接进入
-      next();
-    } else {
-      console.log("请登录！")
-    }
-  }
-});
-export default router;

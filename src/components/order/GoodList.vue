@@ -5,7 +5,9 @@
     </div>
     <div class="right">
       <div class="right-banner">
-        <img src="@/assets/o-banner1.png"/><img src="@/assets/o-banner2.png"/>
+        <a v-for="item in bannerArr" :key="item.id" :href="item.jump_url">
+          <img :src="item.image"/>
+        </a>
       </div>
       <ul class="goodAll">
         <li v-for="(item,index) in dataList" :key="item.id" v-show="index == tabIndex">
@@ -19,7 +21,13 @@
                 <h4>{{good.name}}</h4>
                 <p class="introduce">{{good.describe}}</p>
                 <div>
-                  <span class="price">￥{{good.price}}</span>
+                  <div v-if="good.preferential_price">
+                    <span class="price">￥{{good.preferential_price}}</span>
+                    <span class="scribing">￥{{good.price}}</span>
+                  </div>
+                  <div v-else>
+                    <span>￥{{good.price}}</span>
+                  </div>
                   <div @click.stop>
                     <div v-for="cardLists in cardList" v-if="good.id == cardLists.id" :key="cardLists.id">
                       <span class="reduce-num" @click="reduceNum(good)">-</span>
@@ -50,6 +58,7 @@
     data() {
       return {
         dataList: [],
+        bannerArr:[],
         tabIndex: '',
         cardList: this.$store.state.cardList,
         isShowDetails: false,
@@ -58,12 +67,19 @@
     },
     mounted() {
       this.goodList()
+      this.bannerList()
     },
     methods: {
       goodList() {
         let goodListUrl = "http://linlinchi.auteng.cn/goods/list"
         this.axios.get(goodListUrl).then( res => {
           this.dataList = res.data.data
+        })
+      },
+      bannerList() {
+        let bannerListUrl = "http://linlinchi.auteng.cn/banner/list"
+        this.axios.get(bannerListUrl).then( res => {
+          this.bannerArr = res.data.data
         })
       },
       tabNameClick(index){
@@ -97,7 +113,8 @@
   white-space: nowrap;
 }
 .goodList{
-  background: #fff;
+  background: url("./../../assets/order-bj.png");
+  background-size: cover;
   position: absolute;
   top: 0;
   right: 0;
@@ -106,7 +123,7 @@
   display: flex;
   .left{
     width: 80px;
-    background: #efefef;
+    background: rgba(0,0,0,.05);
     overflow-y: scroll;
     &::-webkit-scrollbar{
       display:none;
@@ -115,11 +132,11 @@
       height: 50px;
       line-height: 50px;
       font-size: 14px;
-      border-left: 6px solid #efefef;
+      border-left: 6px solid rgba(0,0,0,0);
     }
     .selectd{
       background: #fff;
-      border-left: 6px solid #ccc;
+      border-left: 6px solid #efefef;
     }
   }
   .right{
@@ -188,18 +205,22 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            font-size: 15px;
             .price{
               color: red;
-              font-size: 15px;
+            }
+            .scribing{
+              text-decoration:line-through;
+              color: #666;
             }
             .reduce-num,.add-num{
-              display: inline-block;
-              height: 14px;
-              width: 14px;
-              border-radius: 14px;
-              text-align: center;
-              line-height: 12px;
               color: #fff;
+              display: inline-block;
+              height: 18px;
+              width: 18px;
+              border-radius: 18px;
+              text-align: center;
+              line-height: 18px;
               margin-top: 2px;
               background: #ccc;
               font-size: 14px;
@@ -210,7 +231,6 @@
             }
             .add-num{
               background: red;
-              line-height: 15px;
             }
           }
         }

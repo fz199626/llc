@@ -33,7 +33,7 @@
         </ul>
         <div class="dispatching"><span>配送费</span><span>￥{{orderInfo.fee}}</span></div>
         <div class="balance">
-          <a href="tel:15656834641">联系商家</a>
+          <a href="tel:18917293695">联系商家</a>
           <div class="num-price"><span>x{{orderInfo.num}}</span><span class="price">￥{{orderInfo.total_price}}</span></div>
         </div>
       </div>
@@ -81,10 +81,10 @@
       }
     },
     mounted(){
+      // window.addEventListener("popstate", function(e) {
+      //   window.location.replace("/")
+      // }, false);
       this.settlement()
-      window.addEventListener("1", function(e) {
-        this.$router.push('/')
-      }, false);
     },
     methods: {
       settlement(){
@@ -102,7 +102,8 @@
         this.$store.commit('selectWay',nowWay)
       },
       selectAddress(){
-        this.$router.push({name:'address', params:{data: true}})
+        this.$store.commit('setAddress')
+        this.$router.push('/address')
       },
       openRemarks(){
         this.isShowRemarks = !this.isShowRemarks
@@ -115,7 +116,16 @@
         this.remnant = 60 - txtVal;
       },
       pay(){
-        let payUrl = "http://linlinchi.auteng.cn/pay/wechat-pay"
+        let payUrl
+        if(this.$store.state.nowWay == 1){
+          payUrl = "http://linlinchi.auteng.cn/pay/wechat-pay"
+        }else if(this.$store.state.nowWay == 2){
+          if(this.$store.state.orderAddress.id){
+            payUrl = "http://linlinchi.auteng.cn/pay/wechat-pay"
+          }else {
+            alert("请选择地址")
+          }
+        }
         let data = {
           nowWay: this.$store.state.nowWay,
           orderAddress: this.$store.state.orderAddress.id,
@@ -125,7 +135,7 @@
         }
         this.axios.post(payUrl,data).then( res => {
           if(res.data.success){
-            this.weixinPay(res.data.data)
+            this.weixinPay(res.data)
           }
         })
       },
@@ -133,27 +143,34 @@
         var vm = this;
         if(typeof WeixinJSBridge == "undefined"){
           if(document.addEventListener){
-            document.addEventListener('WeixinJSBridgeReady', vm.onBridgeReady(data), false);
+            document.addEventListener('WeixinJSBridgeReady', vm.onBridgeReady(data.data), false);
           }else if (document.attachEvent){
-            document.attachEvent('WeixinJSBridgeReady', vm.onBridgeReady(data));
-            document.attachEvent('onWeixinJSBridgeReady',vm.onBridgeReady(data));
+            document.attachEvent('WeixinJSBridgeReady', vm.onBridgeReady(data.data));
+            document.attachEvent('onWeixinJSBridgeReady',vm.onBridgeReady(data.data));
           }
         }else{
           vm.onBridgeReady(data);
         }
       },
       onBridgeReady(data){
+        let payresUrl = "http://linlinchi.auteng.cn/order/order-status"
+        let datares
         var vm = this;
-        WeixinJSBridge.invoke('getBrandWCPayRequest', data, function(res){
-          vm.$router.push('/');
+        WeixinJSBridge.invoke('getBrandWCPayRequest', data.data, function(res){
+          vm.$router.push('/bill');
           vm.$store.commit('clear')
           if(res.err_msg == "get_brand_wcpay_request:ok" ){
             console.log("支付成功！")
+            datares = {order_id: data.msg, status: 1}
           }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
             alert("取消支付！")
+            datares = {order_id: data.msg, status: 6}
           }else if(res.err_msg == "get_brand_wcpay_request:fail"){
-            alert("支付失败！")
+            datares = {order_id: data.msg, status: 6}
           }
+          vm.axios.post(payresUrl,datares).then( res => {
+            console.log(res.data.success)
+          })
         })
       }
     }
@@ -368,7 +385,7 @@
           line-height: 35px;
           border-radius: 20px;
           margin: 30px auto 0;
-          background: green;
+          background: #01b928;
           color: #fff;
         }
       }

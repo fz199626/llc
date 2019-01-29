@@ -117,7 +117,7 @@
               border-radius: 14px;
               background: #ccc;
               color: #ffff;
-              line-height: 12px;
+              line-height: 14px;
               position: relative;
               top: 2px;
             }
@@ -127,7 +127,6 @@
             }
             .add-num{
               background: red;
-              line-height: 15px;
             }
           }
         }

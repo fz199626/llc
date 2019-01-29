@@ -2,11 +2,15 @@
   <div class="bill">
     <ul>
       <li v-for="item in billList" :key="item.id">
-        <div class="self-taking" v-if="item.way == 1"><p>请前往[国顺东路800号西楼2楼007店]自取</p><span>自取</span></div>
-        <div class="odd-numbers"><p>订单 : {{item.order_num}}</p><span v-if="item.way != 1">{{item.status}}</span></div>
-        <div>
-          {{item.orderDetails.goods_info}}
+        <div class="self-taking" v-if="item.way == 1"><p>请前往[国顺东路800号西楼2楼007店]自取</p><span>{{item.status}}</span></div>
+        <div class="odd-numbers">
+          <p>订单 : {{item.order_num}}</p>
+          <span v-if="item.way == 1" class="meal-code">
+            <span v-if="item.status != '已取消'">取货码：{{item.meal_code}}</span>
+          </span>
+          <span v-else class="status">{{item.status}}</span>
         </div>
+        <div>{{item.orderDetails.goods_info}}</div>
         <ul>
           <li v-for="good in item.orderDetails" :key="good.id">
             <div class="li-left">
@@ -103,7 +107,11 @@
         .odd-numbers{
           font-size: 15px;
           font-weight: bold;
-          span{
+          .meal-code{
+            color: #666;
+            font-size: 12px;
+          }
+          .status{
             background: red;
             color: #fff;
             padding: 4px 10px;

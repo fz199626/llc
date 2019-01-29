@@ -58,6 +58,7 @@
     left: 0;
     max-width: 500px;
     margin: 0 auto;
+    -webkit-overflow-scrolling: touch;
   }
   #nav {
     background: #fff;

@@ -147,7 +147,7 @@
       }
       .add-btn{
         color: #fff;
-        background: green;
+        background: #0ebf38;
         width: 80%;
         margin: 20px auto 0;
         padding: 10px 0;

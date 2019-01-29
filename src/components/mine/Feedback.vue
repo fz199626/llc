@@ -116,7 +116,7 @@
         line-height: 35px;
         border-radius: 20px;
         margin: 30px auto 0;
-        background: green;
+        background: #0ebf38;
         color: #fff;
       }
     }

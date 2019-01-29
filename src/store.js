@@ -9,17 +9,25 @@ export default new Vuex.Store({
     cardNum: 0,
     nowWay: 2,
     orderAddress: [],
-    total: 0
+    total: 0,
+    isSetAddress: false
   },
   mutations: {
     add(state,good){
+      let price
       state.cardNum ++
-      state.total = state.total + Number(good.price)
+      if(good.preferential_price){
+        state.total = state.total + Number(good.preferential_price)
+        price = Number(good.preferential_price)
+      }else{
+        state.total = state.total + Number(good.price)
+        price = Number(good.price)
+      }
       let data = {
         id: good.id,
         image: good.image,
         name: good.name,
-        price: good.price,
+        price: price,
         num: 1,
       }
       function findElem(arrayToSearch,attr,val){/*按照属性值，查找对象*/
@@ -39,6 +47,11 @@ export default new Vuex.Store({
     },
     reduce(state,good){
       state.cardNum --
+      if(Number(good.preferential_price)){
+        state.total = state.total - Number(good.preferential_price)
+      }else{
+        state.total = state.total - Number(good.price)
+      }
       function findElem(arrayToSearch,attr,val){/*按照属性值，查找对象*/
         for (let i=0;i<arrayToSearch.length;i++){
           if(arrayToSearch[i][attr]==val){
@@ -71,7 +84,11 @@ export default new Vuex.Store({
     selectWay(state,nowWay){
       state.nowWay = nowWay
     },
+    setAddress(state){
+      state.isSetAddress = true
+    },
     selectAdress(state,data){
+      state.isSetAddress = false
       state.orderAddress = data
     },
     clear(state){

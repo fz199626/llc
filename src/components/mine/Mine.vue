@@ -9,9 +9,9 @@
         <span>普通会员</span>
       </div>
     </div>
-    <div class="mine-banner">
-      <img src="@/assets/m-banner.png"/>
-    </div>
+    <!--<div class="mine-banner">-->
+      <!--<img src="@/assets/m-banner.png"/>-->
+    <!--</div>-->
     <div class="mine-property">
       <div class="integral">
         <h1>0</h1>
@@ -25,7 +25,7 @@
     <div class="mine-list">
       <router-link to="/address"><img src="@/assets/m-addres.png"/>地址管理</router-link>
       <router-link to="/"><img src="@/assets/m-personal.png"/>个人资料</router-link>
-      <a href="tel:15656834641"><img src="@/assets/m-addres.png"/>联系商家</a>
+      <a href="tel:18917293695"><img src="@/assets/call.png"/>联系商家</a>
       <router-link to="/feedback"><img src="@/assets/m-feedback.png"/>意见反馈</router-link>
     </div>
   </div>
@@ -43,7 +43,7 @@
     },
     methods: {
       mine() {
-        let mineUrl = "http://linlinchi.auteng.cn/site/user-info"
+        let mineUrl = "http://linlinchi.auteng.cn/address/user-info"
         this.axios.get(mineUrl).then( res => {
           this.personal = res.data.data
         })
@@ -54,6 +54,12 @@
 
 <style scoped lang="less">
   .mine{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 51px;
+    left: 0;
+    overflow: auto;
     .mine-head{
       height: 120px;
       background: url("./../../assets/m-bj.png") no-repeat;

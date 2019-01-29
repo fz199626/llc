@@ -28,6 +28,14 @@
     },
     mounted() {
       this.address()
+      // let that = this
+      // window.addEventListener("popstate", function(e) {
+      //   if(that.$store.state.isSetAddress){
+      //     window.location.replace("/settlement")
+      //   }else {
+      //     window.location.replace("/mine")
+      //   }
+      // }, false);
     },
     methods: {
       address() {
@@ -46,7 +54,7 @@
         })
       },
       selectAdress(index){
-        if(this.$route.params.data){
+        if(this.$store.state.isSetAddress){
           this.$store.commit('selectAdress',this.addressList[index])
           this.$router.push('/settlement')
         }
