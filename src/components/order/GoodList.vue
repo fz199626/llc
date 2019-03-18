@@ -211,7 +211,7 @@
             }
             .scribing{
               text-decoration:line-through;
-              color: #666;
+              color: #a9a9a9;
             }
             .reduce-num,.add-num{
               color: #fff;

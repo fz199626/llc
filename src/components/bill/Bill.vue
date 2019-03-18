@@ -1,6 +1,6 @@
 <template>
   <div class="bill">
-    <ul>
+    <ul v-if="billList != ''">
       <li v-for="item in billList" :key="item.id">
         <div class="self-taking" v-if="item.way == 1"><p>请前往[国顺东路800号西楼2楼007店]自取</p><span>{{item.status}}</span></div>
         <div class="odd-numbers">
@@ -38,6 +38,7 @@
         </div>
       </li>
     </ul>
+    <div v-else style="color: #a1a1a1;margin-top: 200px;">你还没有下锅订单哦！</div>
   </div>
 </template>
 
